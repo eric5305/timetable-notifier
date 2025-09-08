@@ -24,7 +24,6 @@ def get_timetable():
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
 
-    # ⭐️ 이 부분이 핵심! 스스로 최신 드라이버를 찾아 실행합니다.
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
     try:
@@ -70,10 +69,13 @@ def get_timetable():
 
 def send_notification(message):
     try:
+        # ⭐️ 여기가 바뀐 부분입니다! 제목을 UTF-8로 번역(인코딩)합니다.
+        title_header = f"📢 {GRADE}학년 {CLASS_NUM}반 오늘의 시간표".encode('utf-8')
+
         requests.post(
             f"https://ntfy.sh/{NTFY_TOPIC}",
             data=message.encode('utf-8'),
-            headers={"Title": f"📢 {GRADE}학년 {CLASS_NUM}반 오늘의 시간표"}
+            headers={"Title": title_header}
         )
         print("알림을 성공적으로 보냈습니다.")
     except Exception as e:
