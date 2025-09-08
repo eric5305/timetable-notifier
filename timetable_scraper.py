@@ -23,26 +23,29 @@ def get_timetable():
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1920,1080")
+    # ⭐️ 여기가 핵심! 사람인 척하는 User-Agent 추가
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36")
 
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+    driver.set_page_load_timeout(30) # 페이지 로딩 타임아웃을 30초로 설정
 
     try:
         # 컴시간 알리미 사이트 접속
         driver.get("http://comci.kr:4082/st")
-        time.sleep(1)
+        time.sleep(2) # 안정성을 위해 대기 시간 증가
 
         # 학교 검색 및 선택
         driver.find_element(By.ID, "sc").send_keys(SCHOOL_NAME)
         driver.find_element(By.ID, "schulbtn").click()
-        time.sleep(1)
+        time.sleep(2)
         driver.find_element(By.XPATH, '//*[@id="school_ra"]/table/tbody/tr[1]/td[1]/a').click()
-        time.sleep(1)
+        time.sleep(2)
 
         # 학년 및 반 선택
         Select(driver.find_element(By.ID, "학년")).select_by_visible_text(GRADE)
         Select(driver.find_element(By.ID, "반")).select_by_visible_text(CLASS_NUM)
         driver.find_element(By.ID, "bt").click()
-        time.sleep(2)
+        time.sleep(3) # 시간표 로딩을 위해 대기 시간 증가
 
         # 시간표 정보 파싱
         soup = BeautifulSoup(driver.page_source, 'html.parser')
@@ -69,7 +72,6 @@ def get_timetable():
 
 def send_notification(message):
     try:
-        # ⭐️ 여기가 바뀐 부분입니다! 제목을 UTF-8로 번역(인코딩)합니다.
         title_header = f"📢 {GRADE}학년 {CLASS_NUM}반 오늘의 시간표".encode('utf-8')
 
         requests.post(
