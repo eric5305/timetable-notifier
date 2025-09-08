@@ -19,13 +19,12 @@ jobs:
         with:
           python-version: '3.10'
 
-      # ⭐️ 여기가 바뀐 부분입니다! 전문가 Action이 Chrome을 설치합니다.
       - name: Set up Chrome
         uses: browser-actions/setup-chrome@v1
 
       - name: Install Python dependencies
         run: |
-          pip install selenium beautifulsoup4 requests
+          pip install selenium beautifulsoup4 requests webdriver-manager
 
       - name: Run Python script
         env:
